@@ -1,5 +1,5 @@
 %option noyywrap
-
+%option yylineno
 %{
 #include <stdio.h>
 
@@ -7,12 +7,30 @@
 
 #include "calc.tab.h"
 
+int lineNumber = 1;
+
+void end_lexical_scan(void) {
+   yy_delete_buffer(YY_CURRENT_BUFFER);
+}
+
+
+void set_input_string(const char* in) {
+    yy_scan_string(in);
+}
+
+
+void yyerror(const char* msg) {
+    printf("ERROR:  %s  LINE:%d",msg, lineNumber);
+	exit(1);
+}
+
 %}
 
 %%
 
+
+
 [ \t]	; // ignore all whitespace
-[0-9]+\.[0-9]+ 	{yylval.fval = atof(yytext); return T_FLOAT;}
 [0-9]+		{yylval.ival = atoi(yytext); return T_INT;}
 \n		{return T_NEWLINE;}
 "+"		{return T_PLUS;}

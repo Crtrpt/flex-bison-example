@@ -12,6 +12,7 @@ lex.yy.c: calc.l calc.tab.h
 
 calc: lex.yy.c calc.tab.c calc.tab.h
 	cd $(workspace) && gcc -o calc calc.tab.c lex.yy.c
+	build\calc.exe
 
 clean:
 	rm -rf $(workspace)
