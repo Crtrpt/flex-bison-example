@@ -2,17 +2,16 @@ workspace="build"
 $(info workspace: $(workspace))
 $(shell mkdir -p $(workspace))
 
-all: calc
+all: egg
 
-calc.tab.c calc.tab.h:	calc.y
-	cd $(workspace) && win_bison -t -v -d ../calc.y
+egg.tab.c egg.tab.h:	egg.y
+	cd $(workspace) && win_bison -t -v -d ../egg.y
 
-lex.yy.c: calc.l calc.tab.h
-	cd $(workspace) && win_flex ../calc.l
+lex.yy.c: egg.l egg.tab.h
+	cd $(workspace) && win_flex ../egg.l
 
-calc: lex.yy.c calc.tab.c calc.tab.h
-	cd $(workspace) && gcc -o calc calc.tab.c lex.yy.c
-	build\calc.exe
+egg: lex.yy.c egg.tab.c egg.tab.h
+	cd $(workspace) && gcc -o egg egg.tab.c lex.yy.c
 
 clean:
 	rm -rf $(workspace)

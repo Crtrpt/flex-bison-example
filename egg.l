@@ -5,7 +5,7 @@
 
 #define YY_DECL int yylex()
 
-#include "calc.tab.h"
+#include "egg.tab.h"
 
 int lineNumber = 1;
 
@@ -13,14 +13,12 @@ void end_lexical_scan(void) {
    yy_delete_buffer(YY_CURRENT_BUFFER);
 }
 
-
 void set_input_string(const char* in) {
     yy_scan_string(in);
 }
 
-
 void yyerror(const char* msg) {
-    printf("ERROR:  %s  LINE:%d",msg, lineNumber);
+    printf("  LINE:[%d]  ERROR:  %s",lineNumber,msg );
 	exit(1);
 }
 
@@ -28,11 +26,9 @@ void yyerror(const char* msg) {
 
 %%
 
-
-
-[ \t]	; // ignore all whitespace
-[0-9]+		{yylval.ival = atoi(yytext); return T_INT;}
-\n		{return T_NEWLINE;}
+[\t]	; // ignore all whitespace
+[0-9]+	{yylval.ival = atoi(yytext); return T_INT;}
+[\n;]  	{return T_NEWLINE;}
 "+"		{return T_PLUS;}
 "-"		{return T_MINUS;}
 "*"		{return T_MULTIPLY;}

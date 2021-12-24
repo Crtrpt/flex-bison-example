@@ -27,11 +27,11 @@ void yyerror(const char* msg);
 
 %type<ival> expression
 
-%start calculation
+%start egg
 
 %%
-calculation:
-	   | calculation line
+egg:
+    | egg line
 ;
 
 line: T_NEWLINE
@@ -40,7 +40,7 @@ line: T_NEWLINE
 ;
 
 expression: T_INT				{ $$ = $1;   }
-	  | expression T_PLUS expression	{ $$ = $1 +1+ $3; }
+	  | expression T_PLUS expression	{ $$ = $1 + $3; }
 	  | expression T_MINUS expression	{ $$ = $1 - $3; }
 	  | expression T_MULTIPLY expression	{ $$ = $1 * $3; }
 	  | T_LEFT expression T_RIGHT		{ $$ = $2; }
@@ -49,12 +49,27 @@ expression: T_INT				{ $$ = $1;   }
 %%
 
 int main() {
-    const char* s="2+2\n";
-    printf("source code :%s\r\n",s);
-    set_input_string(s);
+
+    FILE *fp = fopen("./test.yy", "r");
+    FILE *fp1 = fopen("file.txt", "w+");
+    fseek(fp, 0L, SEEK_END);
+    int sz = ftell(fp);
+    printf("file size:%d \nchar size: %d \n",sz,sizeof (char));
+    char* mptr = (char*) calloc(sz, 2);
+    fseek(fp, 0L, 0);
+    fread(mptr,sz,1,fp);
+    printf("=============start\n");
+    printf("%s\n",mptr);
+    printf("=============end");
+
+    fwrite(mptr, sz, 1, fp1);
+    free(mptr);
+
+    //mptr="\r\n3+3\n4+3\n";
+    set_input_string(mptr);
     int rv=yyparse();
     end_lexical_scan();
-	return 0;
+    return 0;
 }
 
 
