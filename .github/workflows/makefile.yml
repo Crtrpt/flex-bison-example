@@ -2,9 +2,9 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ci ]
   pull_request:
-    branches: [ master ]
+    branches: [ ci ]
 
 jobs:
   build:
@@ -14,8 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: install
-      run:  apt-get install bison  flex gcc build-essential
+    - name: Install package
+      run:  apt-get -y install bison  flex gcc build-essential make
       
-    - name: Install dependencies
+    - name: Make
       run: make
