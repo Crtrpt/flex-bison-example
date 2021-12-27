@@ -4,11 +4,11 @@
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">
       <MakefileProjectSettings>
-        <option name="cleanTarget" value="calc" />
+        <option name="cleanTarget" value="egg" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
+            <option value="D:\flex-bison-example" />
           </set>
         </option>
         <option name="version" value="2" />
