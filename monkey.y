@@ -15,63 +15,71 @@ void end_lexical_scan(void);
 void yyerror(const char* msg);
 %}
 
+%defines
+
 %union {
-	int ival;
-    float fval;
+	int   ival;
 }
 
 %token<ival> T_INT
-%token<fval> T_FLOAT
-%token       T_STR
 %token T_PLUS T_MINUS T_MULTIPLY T_DIVIDE T_LEFT T_RIGHT
-%token T_NEWLINE
-%token T_VAR T_LET T_CONST T_VARNAME T_ASSIGN 
-%token T_COMMENT
-%token T_MULTI_COMMENT
+%token T_VARNAME
 %token T_DUMP
-%token T_AS 
-%token T_IS
-%token T_SCOPE_START T_SCOPE_END
-%token T_ANNOTAION
-%token T_TYPE
+
+%token T_SEMICOLON
+%token T_STR
+%token T_SCOPE_START;
+%token T_SCOPE_END;
+%token T_ASSIGN;
+%token T_ANNOTATION;
+
+%token T_DEF_FUNC;
+
+%token T_VAR;
+%token T_LET;
+%token T_CONST;
 
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
 
 %type<ival> expression
 
-%start monkey
-
+%start program
 
 %%
-monkey:
-    | monkey statement
-    | T_COMMENT       {printf("单行1注释\n");}
-    | T_MULTI_COMMENT {printf("多行注释");}
-    | T_NEWLINE
+program:
+    statement program
+    | T_SEMICOLON
+    | func_def
+    | statement
 ;
 
-
-
+func_def:
+    T_DEF_FUNC T_VARNAME T_LEFT  T_RIGHT func_ret func_body
+;
+func_ret:
+    anotation
+func_body:
+    T_SCOPE_START statement  T_SCOPE_END        {printf("定义一个函数\n");}
+//语句
 statement: 
- T_AS         {printf("转换");}
-    | T_IS          {printf("检测");}
-    | T_VAR         {printf("定义\n");}
-    | T_SCOPE_START {printf("作用域开始");}
-    | T_SCOPE_END   {printf("作用域结束");}
-    | expression
-    | T_DUMP expression                         { printf("\n----\n %d  \n----\n",$2); }
-    | T_SCOPE_START statement T_SCOPE_END       {printf("作用域");}
-
-    | T_CONST T_VARNAME T_ASSIGN expression     {printf("定义常量\n");} 
-    | T_VAR T_VARNAME T_ASSIGN expression       {printf("定义变量\n");} 
-    | T_LET T_VARNAME T_ASSIGN expression       {printf("定义范围内变量\n");} 
+    scope  
+    | expression  T_SEMICOLON                 
+    | T_DUMP expression                         {printf("打印表达式\n");}
+    | T_VAR T_VARNAME  anotation  T_ASSIGN  statement       {printf("定义函数变量\n");}
+    | T_CONST T_VARNAME anotation  T_ASSIGN  statement     {printf("定义函数常量\n");}
+    | T_LET T_VARNAME anotation    T_ASSIGN  statement       {printf("定义作用域变量\n");}
 ;
+
+anotation:
+    T_ANNOTATION T_VARNAME 
+scope:
+    T_SCOPE_START statement  T_SCOPE_END
     
+//表达式
 expression:
-      T_VARNAME                             { printf("变量名称\n"); }  
+      T_VARNAME                             { printf("定义一个变量\n"); }  
       | T_STR                               { printf("字符串\n"); }
-      | T_FLOAT                             { printf("浮点数\n"); }
       | T_INT				                { $$ = $1;   }
 	  | expression T_PLUS expression	    { $$ = $1 + $3; }
 	  | expression T_MINUS expression	    { $$ = $1 - $3; }
@@ -84,7 +92,7 @@ expression:
 
 int main() {
 
-    FILE *fp = fopen("./test.yy", "r");
+    FILE *fp = fopen("./test.m", "r");
     fseek(fp, 0L, SEEK_END);
     int sz = ftell(fp);
     printf("源码文件大小:%d \n",sz);
