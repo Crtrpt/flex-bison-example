@@ -52,6 +52,9 @@ ID       [a-z][a-z0-9]*
 ":"                     {return T_ANNOTATION;}  //注解
 "?"                     {return T_OPTIONAL;}    //可选注解
 
+
+","                     {return T_COMMA;}
+";"                     {return T_SEMICOLON;}
 "var"                   {return T_VAR;}     //函数作用域
 "const"                 {return T_CONST;}   //函数作用域 常量
 "let"                   {return T_LET;}     //域作用域 变量
@@ -62,8 +65,25 @@ ID       [a-z][a-z0-9]*
 "}"		                { return T_SCOPE_END;}   //作用域结束
 
 
+"if"                     {return T_IF;}           //域作用域 变量
+"elseif"                 {return T_ELSEIF;}    //域作用域 变量
+"else"                   {return T_ELSE;}       //域作用域 变量
+
+"switch"                 {return T_SWITCH;}  //多分枝
+"case"                   {return T_CASE;}        //判断
+"default"                {return T_DEFAULT;}    //多分枝默认
+
+
+
+"while"                  {return T_WHILE;}     //循环
+"do"                     {return T_DO;}         //循环
+"for"                    {return T_FOR;}       //循环
+
 "?."                    {return T_TERMINAL;}       //终结符合
 "return"                {return T_RET;}
+
+"break"                 {return T_BREAK;}       //跳出循环
+"continue"              {return T_CONTINUE;}    //继续循环
 
 {ID}                    {return T_VARNAME;}       //变量名
 

@@ -46,6 +46,26 @@ void yyerror(const char* msg);
 
 %token T_DEF_FUNC;
 
+%token T_COMMA;
+%token T_SEMICOLON;
+
+
+%token T_BREAK;
+%token T_CONTINUE;
+
+
+%token T_IF;
+%token T_ELSE;
+%token T_ELSEIF;
+
+%token T_SWITCH;
+%token T_CASE;
+%token T_DEFAULT;
+
+%token T_WHILE;
+%token T_DO;
+%token T_FOR;
+
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
 
@@ -60,6 +80,17 @@ program:
     | statement
 ;
 
+//函数
+func_def:
+    T_DEF_FUNC T_VARNAME T_LEFT func_param T_RIGHT  optional scope {} 
+;
+
+func_param:
+    |func_param T_VARNAME                           { printf("定义参数\n");}  
+    |func_param T_VARNAME T_COMMA                   { printf("定义参数\n");}  
+    |func_param T_VARNAME optional                  { printf("定义参数\n");}  
+    |func_param T_VARNAME optional  T_COMMA         { printf("定义参数\n");} 
+;
 //语句
 statement: 
     | statement scope                       { printf("返回语句\n");}  
@@ -67,17 +98,44 @@ statement:
     | statement expression                  { printf("表达式语句\n"); }  
     | statement T_DUMP expression           { printf("解析语句\n"); }  
     | statement def_var                     
-    | statement T_COMMENT                   { printf("单行注释语句\n"); }                            
+    | statement T_COMMENT                   { printf("单行注释语句\n"); }     
+    | statement func_def                    { printf("定义函数语句\n");}   
+    | statement condition                   { printf("定义函数语句\n");}  
+    | statement loop     
+    | statement T_BREAK                     { printf("跳出循环语句\n");}        
+    | statement T_CONTINUE                  { printf("提前继续循环语句\n");}                                   
 ;
 
+//条件语句
+condition:
+    T_IF  expression   scope                                           
+    | T_IF  expression   scope T_ELSE  scope                            { printf("else语句\n"); } 
+    | T_IF  expression   scope condition_elseif                                      { printf("单个elseif\n"); }  
+    | T_IF  expression   scope condition_elseif   T_ELSE  scope                      { printf("多个elseif\n"); }                                      
+;                       
+
+condition_elseif:
+    | condition_elseif T_ELSEIF  expression  scope                          { printf("elseif\n"); }                      
+;
+
+//循环语句
+
+loop:
+    T_WHILE T_LEFT expression T_RIGHT scope                        { printf("定义while循环语句\n");} 
+    | T_FOR T_LEFT expression T_SEMICOLON expression T_SEMICOLON expression T_RIGHT scope    { printf("定义for循环语句\n");} 
+;
 //定义常量或者变量
 def_var:
     def_anotation T_VARNAME T_ASSIGN expression;
 //带注解定义
-    | def_anotation T_VARNAME T_ANNOTATION T_VARNAME T_ASSIGN expression       { printf("强类型定义\n"); } 
-    | def_anotation T_VARNAME  T_OPTIONAL T_VARNAME  T_ASSIGN expression       { printf("为空定义\n"); } 
-    
+    | def_anotation T_VARNAME  optional T_ASSIGN expression       { printf("强类型定义 语句\n"); } 
+;
 
+
+optional:
+    T_ANNOTATION T_VARNAME
+    | T_OPTIONAL T_VARNAME
+;
 def_anotation:
 //作用域内定义
     T_LET
