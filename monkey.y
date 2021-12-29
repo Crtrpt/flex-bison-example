@@ -13,6 +13,7 @@ void set_input_string(const char* in);
 void end_lexical_scan(void);
 
 void yyerror(const char* msg);
+
 %}
 
 %defines
@@ -41,6 +42,7 @@ void yyerror(const char* msg);
 
 %token T_RET;
 
+%token T_COMMENT;
 
 %token T_DEF_FUNC;
 
@@ -65,7 +67,7 @@ statement:
     | statement expression                  { printf("表达式语句\n"); }  
     | statement T_DUMP expression           { printf("解析语句\n"); }  
     | statement def_var                     
-         
+    | statement T_COMMENT                   { printf("单行注释语句\n"); }                            
 ;
 
 //定义常量或者变量

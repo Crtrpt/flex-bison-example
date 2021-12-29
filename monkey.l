@@ -33,6 +33,9 @@ ID       [a-z][a-z0-9]*
 
 [ \t\r\n]+              {lineNumber++;}
 
+
+"//"(.*)                    {return T_COMMENT;}         //字符串
+
 {DIGIT}+	            {yylval.ival = atoi(yytext); return T_INT;}
 ['"]{1,1}(.*)['"]{1,1}  {return T_STR;}         //字符串
 
