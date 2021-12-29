@@ -31,7 +31,7 @@ ID       [a-z][a-z0-9]*
 
 %%
 
-[ \t\r\n]+  {/* eat up whitespace */}
+[ \t\r\n]+              {lineNumber++;}
 
 {DIGIT}+	            {yylval.ival = atoi(yytext); return T_INT;}
 ['"]{1,1}(.*)['"]{1,1}  {return T_STR;}         //字符串
@@ -47,16 +47,20 @@ ID       [a-z][a-z0-9]*
 ")"		                {return T_RIGHT;}
 
 ":"                     {return T_ANNOTATION;}  //注解
+"?"                     {return T_OPTIONAL;}    //可选注解
+
 "var"                   {return T_VAR;}     //函数作用域
 "const"                 {return T_CONST;}   //函数作用域 常量
 "let"                   {return T_LET;}     //域作用域 变量
 
-"func"                  {printf("定义一个变量名\n"); return T_DEF_FUNC;}
+"func"                  { return T_DEF_FUNC;}
 
-";"                     { return T_SEMICOLON; }
+"{"		                { return T_SCOPE_START;} //作用域开始
+"}"		                { return T_SCOPE_END;}   //作用域结束
 
-"{"		                {printf("创建作用域\n"); return T_SCOPE_START;} //作用域开始
-"}"		                {printf("结束作用域\n"); return T_SCOPE_END;}   //作用域结束
+
+"?."                    {return T_TERMINAL;}       //终结符合
+"return"                {return T_RET;}
 
 {ID}                    {return T_VARNAME;}       //变量名
 

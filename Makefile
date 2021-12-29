@@ -8,7 +8,7 @@ flex="flex";
 all: monkey
 
 monkey.tab.c monkey.tab.h:	monkey.y
-	cd $(workspace) && bison -t -v -d ../monkey.y
+	cd $(workspace) && bison -t -v -d  ../monkey.y
 
 lex.yy.c: monkey.l monkey.tab.h
 	cd $(workspace) && flex ../monkey.l

@@ -26,18 +26,23 @@ void yyerror(const char* msg);
 %token T_VARNAME
 %token T_DUMP
 
-%token T_SEMICOLON
 %token T_STR
 %token T_SCOPE_START;
 %token T_SCOPE_END;
 %token T_ASSIGN;
 %token T_ANNOTATION;
 
-%token T_DEF_FUNC;
-
 %token T_VAR;
 %token T_LET;
 %token T_CONST;
+
+%token T_TERMINAL;
+%token T_OPTIONAL;
+
+%token T_RET;
+
+
+%token T_DEF_FUNC;
 
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
@@ -47,40 +52,46 @@ void yyerror(const char* msg);
 %start program
 
 %%
+//程序
 program:
-    statement program
-    | T_SEMICOLON
-    | func_def
+    | program statement 
     | statement
 ;
 
-func_def:
-    T_DEF_FUNC T_VARNAME T_LEFT  T_RIGHT func_ret func_body
-;
-func_ret:
-    anotation
-func_body:
-    T_SCOPE_START statement  T_SCOPE_END        {printf("定义一个函数\n");}
 //语句
 statement: 
-    scope  
-    | expression  T_SEMICOLON                 
-    | T_DUMP expression                         {printf("打印表达式\n");}
-    | T_VAR T_VARNAME  anotation  T_ASSIGN  statement       {printf("定义函数变量\n");}
-    | T_CONST T_VARNAME anotation  T_ASSIGN  statement     {printf("定义函数常量\n");}
-    | T_LET T_VARNAME anotation    T_ASSIGN  statement       {printf("定义作用域变量\n");}
+    | statement scope                       { printf("返回语句\n");}  
+    | statement T_RET expression            { printf("返回语句\n");}   
+    | statement expression                  { printf("表达式语句\n"); }  
+    | statement T_DUMP expression           { printf("解析语句\n"); }  
+    | statement def_var                     
+         
 ;
 
-anotation:
-    T_ANNOTATION T_VARNAME 
+//定义常量或者变量
+def_var:
+    def_anotation T_VARNAME T_ASSIGN expression;
+//带注解定义
+    | def_anotation T_VARNAME T_ANNOTATION T_VARNAME T_ASSIGN expression       { printf("强类型定义\n"); } 
+    | def_anotation T_VARNAME  T_OPTIONAL T_VARNAME  T_ASSIGN expression       { printf("为空定义\n"); } 
+    
+
+def_anotation:
+//作用域内定义
+    T_LET
+//函数内定义
+    | T_VAR
+    | T_CONST
+
+//作用域
 scope:
     T_SCOPE_START statement  T_SCOPE_END
-    
+;   
 //表达式
 expression:
       T_VARNAME                             { printf("定义一个变量\n"); }  
       | T_STR                               { printf("字符串\n"); }
-      | T_INT				                { $$ = $1;   }
+      | T_INT				                { printf("定义一个变量 %d \n",$1); $$ = $1;   }
 	  | expression T_PLUS expression	    { $$ = $1 + $3; }
 	  | expression T_MINUS expression	    { $$ = $1 - $3; }
 	  | expression T_MULTIPLY expression	{ $$ = $1 * $3; }
