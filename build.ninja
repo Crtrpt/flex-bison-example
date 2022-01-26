@@ -1,0 +1,19 @@
+workspace=build
+
+rule bison
+    command = cd $workspace && bison -t -v -d  ../monkey.y
+
+rule flex
+    command = cd $workspace && flex ../monkey.l
+
+rule build
+    command = cd $workspace && gcc -o monkey monkey.tab.c lex.yy.c
+
+rule run
+    command = cd $workspace && monkey
+
+build bison: bison
+
+build flex: flex
+
+build main: build || bison flex
