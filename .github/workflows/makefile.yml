@@ -18,4 +18,4 @@ jobs:
       run:  sudo apt-get -y install bison  flex gcc build-essential ninja-build
       
     - name: ninja
-      run: ninja
+      run: mkdir build && ninja
